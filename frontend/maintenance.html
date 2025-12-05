@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Maintenance Management - Cargo Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+  <script src="core.js"></script>
+</head>
+<body class="bg-gradient-to-br from-red-50 to-orange-50">
+  <div class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-red-600 to-orange-600 text-white shadow-lg w-full">
+      <div class="w-full px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-red-600 font-bold text-2xl shadow-md">M</div>
+          <div>
+            <h1 class="text-xl font-bold">Maintenance Management</h1>
+            <p class="text-xs text-red-100">Track and manage container repairs</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <a href="admin-tasks.html" class="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg transition text-sm">
+            Task Assignment
+          </a>
+          <span id="userName" class="text-sm font-medium"></span>
+          <button id="logoutBtn" class="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg transition text-sm">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl shadow-md p-4 border-l-4 border-red-500">
+          <h3 class="text-gray-500 text-sm font-medium">Total Repairs</h3>
+          <p id="stat-total" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-4 border-l-4 border-yellow-500">
+          <h3 class="text-gray-500 text-sm font-medium">In Progress</h3>
+          <p id="stat-inProgress" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-4 border-l-4 border-green-500">
+          <h3 class="text-gray-500 text-sm font-medium">Completed</h3>
+          <p id="stat-completed" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-4 border-l-4 border-blue-500">
+          <h3 class="text-gray-500 text-sm font-medium">Pending</h3>
+          <p id="stat-pending" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="bg-white rounded-xl shadow-md p-4 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="text" id="searchInput" placeholder="Search by container ID..." 
+                   class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+            <select id="statusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+              <option value="">All Statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="InProgress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+            <select id="containerFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+              <option value="">All Containers</option>
+            </select>
+          </div>
+          <button id="newMaintenanceBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            New Maintenance
+          </button>
+        </div>
+      </div>
+
+      <!-- Maintenance Table -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+          <table id="maintenanceTable" class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Container ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issue</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <!-- Maintenance records will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- New Maintenance Dialog -->
+    <div id="maintenanceDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+      <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">New Maintenance Record</h2>
+        <form id="maintenanceForm">
+          <input type="hidden" id="maintenanceId">
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2" for="mContainerId">Container ID</label>
+            <select id="mContainerId" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" required>
+              <option value="">Select Container</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2" for="issueDescription">Issue Description</label>
+            <textarea id="issueDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" required></textarea>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2" for="assignedTo">Assigned To</label>
+            <input type="text" id="assignedTo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2" for="status">Status</label>
+            <select id="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" required>
+              <option value="Pending">Pending</option>
+              <option value="InProgress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2" for="taskSource">Task Source</label>
+            <select id="taskSource" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" required>
+              <option value="admin">Admin Assigned Task</option>
+              <option value="maintenance">Maintenance Request</option>
+            </select>
+          </div>
+          <div class="flex justify-end gap-3 mt-6">
+            <button type="button" id="cancelMaintenanceBtn" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">Cancel</button>
+            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="maintenance.js"></script>
+</body>
+</html>

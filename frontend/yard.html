@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Yard Management - Cargo Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+  <script src="core.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body class="bg-gradient-to-br from-green-50 to-teal-50">
+  <div class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-green-600 to-teal-600 text-white shadow-lg w-full">
+      <div class="w-full px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-green-600 font-bold text-2xl shadow-md">Y</div>
+          <div>
+            <h1 class="text-xl font-bold">Yard Management</h1>
+            <p class="text-xs text-green-100">Container positioning and yard layout</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="userName" class="text-sm font-medium"></span>
+          <button id="logoutBtn" class="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg transition text-sm">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl shadow-md p-4 border-l-4 border-green-500">
+          <h3 class="text-gray-500 text-sm font-medium">Total Containers</h3>
+          <p id="stat-total" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-4 border-l-4 border-blue-500">
+          <h3 class="text-gray-500 text-sm font-medium">Available</h3>
+          <p id="stat-available" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-4 border-l-4 border-yellow-500">
+          <h3 class="text-gray-500 text-sm font-medium">In Transit</h3>
+          <p id="stat-inTransit" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-4 border-l-4 border-red-500">
+          <h3 class="text-gray-500 text-sm font-medium">Under Maintenance</h3>
+          <p id="stat-underMaintenance" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="bg-white rounded-xl shadow-md p-4 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="text" id="searchInput" placeholder="Search by container ID..." 
+                   class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+            <select id="statusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              <option value="">All Statuses</option>
+              <option value="Available">Available</option>
+              <option value="InTransit">In Transit</option>
+              <option value="Booked">Booked</option>
+            </select>
+            <select id="zoneFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              <option value="">All Zones</option>
+              <option value="Zone A">Zone A</option>
+              <option value="Zone B">Zone B</option>
+              <option value="Zone C">Zone C</option>
+              <option value="Loading">Loading Area</option>
+              <option value="Repair">Repair Yard</option>
+            </select>
+          </div>
+          <button id="refreshBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Yard Map and Container List -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Yard Map Visualization -->
+        <div class="bg-white rounded-xl shadow-md p-4">
+          <h2 class="text-lg font-bold text-gray-800 mb-4">Yard Layout</h2>
+          <div id="yardMap" class="h-96 rounded-lg bg-gradient-to-br from-green-50 to-blue-50 border-2 border-gray-300 relative overflow-hidden">
+            <!-- Yard Zones -->
+            <div class="absolute top-2 left-2 w-24 h-24 bg-blue-200 border-2 border-blue-400 rounded-lg flex items-center justify-center">
+              <span class="text-blue-800 font-bold">Zone A</span>
+            </div>
+            <div class="absolute top-2 right-2 w-24 h-24 bg-green-200 border-2 border-green-400 rounded-lg flex items-center justify-center">
+              <span class="text-green-800 font-bold">Zone B</span>
+            </div>
+            <div class="absolute bottom-2 left-2 w-24 h-24 bg-yellow-200 border-2 border-yellow-400 rounded-lg flex items-center justify-center">
+              <span class="text-yellow-800 font-bold">Zone C</span>
+            </div>
+            <div class="absolute bottom-2 right-2 w-24 h-24 bg-red-200 border-2 border-red-400 rounded-lg flex items-center justify-center">
+              <span class="text-red-800 font-bold">Repair</span>
+            </div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-200 border-2 border-purple-400 rounded-lg flex items-center justify-center">
+              <span class="text-purple-800 font-bold text-center">Loading<br/>Area</span>
+            </div>
+            <!-- Containers will be positioned here dynamically -->
+            <div id="yardContainers" class="absolute inset-0"></div>
+          </div>
+          <div class="mt-4 grid grid-cols-3 gap-2">
+            <div class="bg-blue-100 text-blue-800 text-xs p-2 rounded text-center">Zone A</div>
+            <div class="bg-green-100 text-green-800 text-xs p-2 rounded text-center">Zone B</div>
+            <div class="bg-yellow-100 text-yellow-800 text-xs p-2 rounded text-center">Zone C</div>
+            <div class="bg-red-100 text-red-800 text-xs p-2 rounded text-center">Repair</div>
+            <div class="bg-purple-100 text-purple-800 text-xs p-2 rounded text-center">Loading</div>
+            <div class="bg-gray-100 text-gray-800 text-xs p-2 rounded text-center">Reserved</div>
+          </div>
+        </div>
+
+        <!-- Container List -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <h2 class="text-lg font-bold text-gray-800 p-4">Container Positions</h2>
+          <div class="overflow-x-auto">
+            <table id="containersTable" class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Container ID</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zone</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <!-- Container positions will be populated here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Position Assignment Dialog -->
+      <div id="positionDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Assign Container Position</h2>
+          <form id="positionForm">
+            <input type="hidden" id="containerId">
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-medium mb-2" for="containerNumber">Container ID</label>
+              <input type="text" id="containerNumber" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-medium mb-2" for="zone">Zone</label>
+              <select id="zone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                <option value="">Select Zone</option>
+                <option value="Zone A">Zone A</option>
+                <option value="Zone B">Zone B</option>
+                <option value="Zone C">Zone C</option>
+                <option value="Loading">Loading Area</option>
+                <option value="Repair">Repair Yard</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-medium mb-2" for="position">Position</label>
+              <input type="text" id="position" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="e.g., A12, B05">
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+              <button type="button" id="cancelPositionBtn" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">Cancel</button>
+              <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Save Position</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="yard.js"></script>
+</body>
+</html>

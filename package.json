@@ -1,0 +1,33 @@
+{
+  "name": "container-management-system",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/start-dev.js",
+    "prod": "node backend/start-prod.js",
+    "migrate": "node migrate-dbs.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^8.7.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.16.3"
+  },
+  "main": "index.js",
+  "keywords": [
+    "container",
+    "management",
+    "logistics",
+    "cargo"
+  ],
+  "author": "Container Management System Team",
+  "license": "MIT",
+  "description": "A comprehensive container management system for logistics and cargo operations"
+}

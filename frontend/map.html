@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Container Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <header class="bg-gradient-to-r from-green-600 to-teal-700 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-green-600 font-bold text-2xl shadow-md">📍</div>
+        <div>
+          <h1 class="text-xl font-bold text-white">Cargo Location Map</h1>
+          <p class="text-xs text-green-100" id="containerTitle">Loading...</p>
+        </div>
+      </div>
+      <nav class="flex items-center gap-3">
+        <a id="backLink" href="#" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium transition border border-white/30">Back to Details</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="h-screen">
+    <div id="map" class="w-full h-full"></div>
+  </main>
+
+  <script src="core.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const id = Number(params.get('id'));
+    const backLink = document.getElementById('backLink');
+    const containerTitle = document.getElementById('containerTitle');
+
+    backLink.href = `container.html?id=${id}`;
+
+    const c = Store.containers.find(x => x.id === id);
+    if (!c) {
+      containerTitle.textContent = 'Container not found';
+      document.getElementById('map').innerHTML = '<div class="p-6 bg-white rounded-xl shadow text-center">Container not found.</div>';
+    } else if (c.lat == null || c.lng == null) {
+      containerTitle.textContent = `${c.number} - No GPS Data`;
+      document.getElementById('map').innerHTML = '<div class="p-6 bg-white rounded-xl shadow text-center">No GPS coordinates available for this container.</div>';
+    } else {
+      containerTitle.textContent = `${c.number} - ${c.location || 'Unknown Location'}`;
+      
+      const map = L.map('map').setView([c.lat, c.lng], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      const marker = L.marker([c.lat, c.lng]).addTo(map);
+      marker.bindPopup(`
+        <div class="p-2">
+          <h3 class="font-bold text-lg">${c.number}</h3>
+          <p class="text-sm"><strong>Type:</strong> ${c.type || '-'}</p>
+          <p class="text-sm"><strong>Size:</strong> ${c.size || '-'}</p>
+          <p class="text-sm"><strong>Status:</strong> ${c.status}</p>
+          <p class="text-sm"><strong>Location:</strong> ${c.location || '-'}</p>
+          <p class="text-sm"><strong>Owner:</strong> ${c.owner || '-'}</p>
+          <p class="text-xs text-gray-500 mt-1">GPS: ${c.lat}, ${c.lng}</p>
+        </div>
+      `).openPopup();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Information</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen py-8">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h1 class="text-2xl font-bold text-gray-800">System User Information</h1>
+                    <p class="text-gray-600 mt-1">View all users in the system</p>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold text-gray-700">All Users</h2>
+                        <button id="refreshBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Refresh
+                        </button>
+                    </div>
+                    
+                    <div id="loading" class="text-center py-8 hidden">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                        <p class="mt-2 text-gray-600">Loading user information...</p>
+                    </div>
+                    
+                    <div id="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 hidden">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span id="errorMessage" class="text-red-700"></span>
+                        </div>
+                    </div>
+                    
+                    <div id="users-container" class="space-y-4">
+                        <div class="text-center py-8 text-gray-500">
+                            Click "Refresh" to load user information
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            const loadingEl = document.getElementById('loading');
+            const errorEl = document.getElementById('error');
+            const errorMessageEl = document.getElementById('errorMessage');
+            const usersContainer = document.getElementById('users-container');
+            
+            // Check if user is logged in
+            const token = localStorage.getItem('cms_token');
+            if (!token) {
+                showError('You must be logged in as an administrator to view this page.');
+                refreshBtn.disabled = true;
+                return;
+            }
+            
+            // Refresh button click handler
+            refreshBtn.addEventListener('click', loadUserInfo);
+            
+            // Load user info on page load
+            loadUserInfo();
+            
+            async function loadUserInfo() {
+                try {
+                    // Show loading indicator
+                    loadingEl.classList.remove('hidden');
+                    errorEl.classList.add('hidden');
+                    usersContainer.innerHTML = '';
+                    
+                    // Fetch user info from API
+                    const response = await fetch('/api/admin/users-info', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Failed to load user information: ${response.status} ${await response.text()}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Hide loading indicator
+                    loadingEl.classList.add('hidden');
+                    
+                    // Display user information
+                    displayUsers(data.users, data.totalUsers);
+                } catch (error) {
+                    loadingEl.classList.add('hidden');
+                    showError(error.message);
+                }
+            }
+            
+            function displayUsers(users, totalUsers) {
+                if (!users || users.length === 0) {
+                    usersContainer.innerHTML = `
+                        <div class="text-center py-8">
+                            <svg class="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <h3 class="mt-4 text-lg font-medium text-gray-900">No users found</h3>
+                            <p class="mt-1 text-gray-500">There are no users in the system yet.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display total users count
+                usersContainer.innerHTML = `
+                    <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <div>
+                                <h3 class="text-lg font-medium text-blue-800">Total Users: ${totalUsers}</h3>
+                                <p class="text-blue-600">Showing all users in the system</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Display each user
+                users.forEach((user, index) => {
+                    const userCard = document.createElement('div');
+                    userCard.className = 'bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden';
+                    
+                    // Determine role display
+                    let roleBadge = '';
+                    if (user.role === 'admin') {
+                        roleBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">Administrator</span>';
+                    } else {
+                        roleBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Staff</span>';
+                    }
+                    
+                    // Determine status display
+                    let statusBadge = '';
+                    if (user.status === 'inactive') {
+                        statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactive</span>';
+                    } else {
+                        statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>';
+                    }
+                    
+                    userCard.innerHTML = `
+                        <div class="p-6">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <span class="text-blue-800 font-medium text-lg">
+                                            ${user.firstName ? user.firstName.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-lg font-medium text-gray-900">
+                                                ${user.firstName} ${user.lastName}
+                                                ${user.firstName || user.lastName ? '' : '(No name provided)'}
+                                            </h3>
+                                            <p class="text-sm text-gray-500">@${user.username}</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            ${roleBadge}
+                                            ${statusBadge}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <p class="text-sm text-gray-500">User ID</p>
+                                            <p class="font-medium">${user.id}</p>
+                                        </div>
+                                        
+                                        <div>
+                                            <p class="text-sm text-gray-500">Email</p>
+                                            <p class="font-medium">${user.email || 'Not provided'}</p>
+                                        </div>
+                                        
+                                        <div>
+                                            <p class="text-sm text-gray-500">Department</p>
+                                            <p class="font-medium">${user.department || 'Not assigned'}</p>
+                                        </div>
+                                        
+                                        <div>
+                                            <p class="text-sm text-gray-500">Member since</p>
+                                            <p class="font-medium">
+                                                ${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    usersContainer.appendChild(userCard);
+                });
+            }
+            
+            function showError(message) {
+                errorMessageEl.textContent = message;
+                errorEl.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
