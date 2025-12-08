@@ -11,9 +11,21 @@ services:
         value: production
       - key: PORT
         value: 3000
+
+      # main app DB (db.js)
       - key: RENDER_DB_PATH
-        value: /opt/render/project/src/data/cargo_management.db
+        value: /opt/render/project/src/backend/cargo_management.db
+
+      # admin DB (adminDb.js)
+      - key: RENDER_ADMIN_DB_PATH
+        value: /opt/render/project/src/backend/admin_cargo_management.db
+
+      # user DB (userDb.js)
+      - key: RENDER_USER_DB_PATH
+        value: /opt/render/project/src/backend/user_cargo_management.db
+
       - key: JWT_SECRET
         generateValue: true
+
       - key: NODE_VERSION
         value: 20.18.0
