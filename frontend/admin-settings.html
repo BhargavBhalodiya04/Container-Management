@@ -35,7 +35,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Settings Navigation -->
       <div class="lg:col-span-1">
-        <div class="bg-white rounded-xl shadow-md p-6 sticky top-6">
+        <div class="bg-white rounded-xl shadow-md p-6 sticky top-6 z-10" id="settingsNavigation" style="max-height: calc(100vh - 2rem); overflow-y: auto;">
           <h3 class="text-lg font-bold text-gray-800 mb-4">Settings Menu</h3>
           <nav>
             <ul class="space-y-1">
@@ -43,15 +43,16 @@
                 <a href="#general" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg bg-blue-50 text-blue-700">General</a>
               </li>
               <li>
-                <a href="#users" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">User Management</a>
+                <a href="#statistics" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">System Statistics</a>
               </li>
               <li>
-                <a href="user-info.html" target="_blank" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg flex items-center justify-between">
-                  <span>User Information</span>
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                  </svg>
-                </a>
+                <a href="#activity" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">Recent Activity</a>
+              </li>
+              <li>
+                <a href="#containers" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">Container Management</a>
+              </li>
+              <li>
+                <a href="#user-info" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">User Information</a>
               </li>
               <li>
                 <a href="#security" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">Security</a>
@@ -145,14 +146,62 @@
           </form>
         </div>
         
-        <!-- User Management -->
-        <div id="users" class="bg-white rounded-xl shadow-md p-6 mb-6 hidden">
-          <h3 class="text-lg font-bold text-gray-800 mb-4">User Management</h3>
+        <!-- System Statistics -->
+        <div id="statistics" class="bg-white rounded-xl shadow-md p-6 mb-6 hidden">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-gray-800">System Statistics</h3>
+            <button id="backToSettingsBtn2" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              Back to Settings
+            </button>
+          </div>
           
-          <div class="mb-4">
-            <button id="addUserBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition flex items-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-              Add New User
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-blue-50 rounded-lg p-4">
+              <div class="text-blue-800 font-bold text-2xl" id="totalContainers">0</div>
+              <div class="text-blue-600 text-sm">Total Containers</div>
+            </div>
+            <div class="bg-green-50 rounded-lg p-4">
+              <div class="text-green-800 font-bold text-2xl" id="availableContainers">0</div>
+              <div class="text-green-600 text-sm">Available Containers</div>
+            </div>
+            <div class="bg-yellow-50 rounded-lg p-4">
+              <div class="text-yellow-800 font-bold text-2xl" id="inTransitContainers">0</div>
+              <div class="text-yellow-600 text-sm">In Transit</div>
+            </div>
+            <div class="bg-purple-50 rounded-lg p-4">
+              <div class="text-purple-800 font-bold text-2xl" id="bookedContainers">0</div>
+              <div class="text-purple-600 text-sm">Booked</div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+              <div class="text-gray-800 font-bold text-xl" id="totalUsers">0</div>
+              <div class="text-gray-600 text-sm">Total Users</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+              <div class="text-gray-800 font-bold text-xl" id="pendingRequests">0</div>
+              <div class="text-gray-600 text-sm">Pending Requests</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+              <div class="text-gray-800 font-bold text-xl" id="activeBookings">0</div>
+              <div class="text-gray-600 text-sm">Active Bookings</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div id="activity" class="bg-white rounded-xl shadow-md p-6 mb-6 hidden">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-gray-800">Recent Activity</h3>
+            <button id="backToSettingsBtn3" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              Back to Settings
             </button>
           </div>
           
@@ -160,82 +209,113 @@
             <table class="w-full">
               <thead class="bg-gray-50">
                 <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username & ID</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <!-- User rows will be populated by JavaScript -->
+              <tbody id="activityTableBody" class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td colspan="3" class="px-4 py-8 text-center text-gray-500">
+                    <div class="flex flex-col items-center justify-center">
+                      <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      <p>No recent activity</p>
+                    </div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
         
-        <!-- Add User Dialog -->
-        <dialog id="addUserDialog" class="rounded-2xl shadow-2xl border-0 backdrop:bg-black/50 max-w-md w-full">
-          <form id="addUserForm" class="w-full p-6">
-            <div class="flex items-center justify-between mb-6 pb-4 border-b">
-              <h3 class="text-xl font-bold text-gray-800">Add New User</h3>
-              <button value="cancel" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-            </div>
-            
-            <div class="space-y-4">
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                  <input type="text" id="firstName" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="John">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                  <input type="text" id="lastName" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Doe">
-                </div>
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                <input type="text" id="username" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="johndoe">
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <input type="email" id="userEmail" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="john.doe@example.com">
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                <input type="text" id="userAddress" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="123 Main St, City, State">
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                <select id="userRole" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="user">Staff</option>
-                  <option value="admin">Administrator</option>
-                </select>
-              </div>
-              
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                  <input type="password" id="userPassword" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                  <input type="password" id="confirmPassword" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+        <!-- Container Management -->
+        <div id="containers" class="bg-white rounded-xl shadow-md p-6 mb-6 hidden">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-gray-800">Container Management</h3>
+            <button id="backToSettingsBtn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              Back to Settings
+            </button>
+          </div>
+          
+          <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="flex-1">
+              <div class="relative">
+                <input type="text" id="containerSearch" placeholder="Search containers..." class="w-full px-4 py-2.5 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
               </div>
             </div>
-            
-            <div class="flex gap-3 justify-end pt-4 mt-6 border-t">
-              <button type="button" id="cancelAddUserBtn" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition">Cancel</button>
-              <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition shadow-md">Add User</button>
+            <div class="flex gap-2">
+              <select id="containerStatusFilter" class="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">All Status</option>
+                <option value="Available">Available</option>
+                <option value="In Transit">In Transit</option>
+                <option value="Booked">Booked</option>
+                <option value="Maintenance">Maintenance</option>
+              </select>
+              <button id="refreshContainersBtn" class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Refresh
+              </button>
             </div>
-          </form>
-        </dialog>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Number</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="containersTableBody" class="bg-white divide-y divide-gray-200">
+                <!-- Container rows will be populated by JavaScript -->
+                <tr>
+                  <td colspan="9" class="px-4 py-8 text-center text-gray-500">
+                    <div class="flex flex-col items-center justify-center">
+                      <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                      </svg>
+                      <p>No containers found</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- User Information -->
+        <div id="user-info" class="bg-white rounded-xl shadow-md p-6 mb-6 hidden">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-gray-800">User Information</h3>
+            <button id="backToSettingsBtn4" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              Back to Settings
+            </button>
+          </div>
+          
+          <div class="border rounded-lg overflow-hidden">
+            <iframe src="user-info.html" class="w-full h-96 border-0"></iframe>
+          </div>
+        </div>
       </div>
     </div>
   </main>
