@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const target = this.getAttribute('href');
       
       // Hide all content sections (but not the navigation panel)
-      const contentSections = document.querySelectorAll('#general, #statistics, #activity, #containers, #user-info, #security, #integrations');
+      const contentSections = document.querySelectorAll('#general, #statistics, #activity, #containers, #user-info');
       contentSections.forEach(section => {
         section.classList.add('hidden');
       });
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Helper function to show general settings and update navigation
   function showGeneralSettings() {
     // Hide all content sections (but not the navigation panel)
-    const contentSections = document.querySelectorAll('#general, #statistics, #activity, #containers, #user-info, #security, #integrations');
+    const contentSections = document.querySelectorAll('#general, #statistics, #activity, #containers, #user-info');
     contentSections.forEach(section => {
       section.classList.add('hidden');
     });
