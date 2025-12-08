@@ -26,6 +26,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+// Use PORT from environment variables (Render sets this automatically)
 const PORT = process.env.PORT || 3000;
 
 // Middleware

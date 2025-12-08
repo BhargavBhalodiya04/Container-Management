@@ -58,6 +58,38 @@ pm2 startup
 pm2 save
 ```
 
+## Deploying to Render Platform
+
+### 1. Create a Render Account
+Sign up at [render.com](https://render.com) if you don't have an account.
+
+### 2. Connect Your Repository
+- Fork this repository to your GitHub account
+- Connect your GitHub account to Render
+- Select this repository when creating a new web service
+
+### 3. Configure Your Render Service
+The repository includes a `render.yaml` file that defines:
+- Node.js environment
+- Build and start commands
+- Environment variables
+- Persistent disk for database storage
+
+### 4. Environment Variables on Render
+Render will automatically use the environment variables defined in `render.yaml`. 
+The `JWT_SECRET` is configured to be auto-generated for security.
+
+### 5. Deploy
+Click "Create Web Service" and Render will:
+- Clone your repository
+- Install dependencies
+- Build the application
+- Start the server
+- Mount persistent storage for databases
+
+### 6. Access Your Application
+Once deployed, Render will provide a URL to access your application.
+
 ## Default Credentials
 - Admin user: `admin` / `admin123`
 - Staff user: `staff` / `staff123`

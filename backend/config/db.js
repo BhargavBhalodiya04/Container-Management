@@ -1,12 +1,30 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
+import path from 'path';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
 
 // Load environment variables
 dotenv.config();
 
 // Use environment variable for database path, fallback to default
-const dbPath = process.env.DB_PATH || 'cargo_management.db';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// For Render deployment, use RENDER_DB_PATH if available, otherwise use DB_PATH
+// Fallback to local file if neither is set
+const dbPath = 
+  process.env.RENDER_DB_PATH ||
+  process.env.DB_PATH ||
+  path.join(__dirname, '..', 'cargo_management.db');
+
+console.log('Using database path:', dbPath);
+
+// Ensure the directory exists
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
 
 // Create database file if it doesn't exist
 const db = new Database(dbPath);

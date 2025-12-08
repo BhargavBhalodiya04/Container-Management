@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: container-management-system
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: RENDER_DB_PATH
+        value: /var/data/cargo_management.db
+      - key: RENDER_USER_DB_PATH
+        value: /var/data/user_cargo_management.db
+      - key: RENDER_ADMIN_DB_PATH
+        value: /var/data/admin_cargo_management.db
+      - key: JWT_SECRET
+        generateValue: true
+
+disk:
+  - name: container-db-data
+    mountPath: /var/data
+    sizeGB: 1
