@@ -5,6 +5,7 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: npm start
+
     envVars:
       - key: NODE_ENV
         value: production
@@ -19,7 +20,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
 
-disk:
-  - name: container-db-data
-    mountPath: /var/data
-    sizeGB: 1
+    disk:
+      name: container-db-data
+      mountPath: /var/data
+      sizeGB: 1
