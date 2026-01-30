@@ -453,6 +453,9 @@ menu {
 /* Fix for login form input overlap with icons */
 .login-input {
   padding-left: 2.5rem !important; /* Increased padding to prevent text overlap with icons */
+  width: 100% !important; /* Ensure full width */
+  box-sizing: border-box !important; /* Include padding in width calculation */
+  min-width: 100% !important; /* Ensure minimum width covers container */
 }
 
 .login-icon-container {
@@ -460,6 +463,30 @@ menu {
   align-items: center;
   justify-content: center;
   width: 2.5rem !important; /* Fixed width for icon container */
+}
+
+/* Fix for registration form input overlap with icons */
+.register-input {
+  padding-left: 2.75rem !important; /* Increased padding to prevent text overlap with icons */
+  padding-right: 3rem !important; /* Space for password toggle */
+  width: 100% !important; /* Ensure full width */
+  box-sizing: border-box !important; /* Include padding in width calculation */
+  min-width: 100% !important; /* Ensure minimum width covers container */
+}
+
+.register-input-no-toggle {
+  padding-left: 2.75rem !important; /* Increased padding to prevent text overlap with icons */
+  padding-right: 1rem !important; /* Normal right padding */
+  width: 100% !important; /* Ensure full width */
+  box-sizing: border-box !important; /* Include padding in width calculation */
+  min-width: 100% !important; /* Ensure minimum width covers container */
+}
+
+.register-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem !important; /* Fixed width for icon container */
 }
 
 /* Responsive adjustments */

@@ -44,6 +44,35 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Registration routes (public)
+app.post('/api/register', (req, res) => {
+  // Import the registration controller dynamically to avoid circular dependencies
+  import('./controllers/registrationController.js').then(({ default: registrationController }) => {
+    registrationController.register(req, res);
+  }).catch(err => {
+    console.error('Failed to load registration controller:', err);
+    res.status(500).json({ error: 'Registration service unavailable' });
+  });
+});
+
+app.get('/api/check-username', (req, res) => {
+  import('./controllers/registrationController.js').then(({ default: registrationController }) => {
+    registrationController.checkUsername(req, res);
+  }).catch(err => {
+    console.error('Failed to load registration controller:', err);
+    res.status(500).json({ error: 'Service unavailable' });
+  });
+});
+
+app.get('/api/check-email', (req, res) => {
+  import('./controllers/registrationController.js').then(({ default: registrationController }) => {
+    registrationController.checkEmail(req, res);
+  }).catch(err => {
+    console.error('Failed to load registration controller:', err);
+    res.status(500).json({ error: 'Service unavailable' });
+  });
+});
+
 // Authentication routes
 app.post('/api/login', authController.login);
 
